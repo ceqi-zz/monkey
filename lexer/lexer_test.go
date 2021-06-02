@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TextNextToken(t *testing.T) {
+func TestNextToken(t *testing.T) {
 	input := `=+(){},;`
 
 	tests := []struct {
@@ -35,4 +35,19 @@ func TextNextToken(t *testing.T) {
 			t.Fatalf("tests[%d] - literal wrong, wanted: %q, got: %q", i, tt.expectedLiteral, tok.Literal)
 		}
 	}
+}
+
+func TestSkipWhitespace(t *testing.T) {
+	l := New(`
+
+	let the_game_begain`)
+
+	l.skipWhitespace()
+
+	got := l.ch
+
+	if got != 'l' {
+		t.Fatalf("l.skipWhitespace(), l.ch = %v, expected: l", got)
+	}
+
 }

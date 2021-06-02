@@ -1,6 +1,9 @@
 package lexer
 
-import "ceqi/monkey/token"
+import (
+	"ceqi/monkey/token"
+	"regexp"
+)
 
 type Lexer struct {
 	input        string
@@ -56,4 +59,11 @@ func (l *Lexer) NextToken() token.Token {
 
 func newToken(tok token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tok, Literal: string(ch)}
+}
+
+func (l *Lexer) skipWhitespace() {
+	r := regexp.MustCompile(`\s`)
+	for r.Match([]byte{l.ch}) {
+		l.readChar()
+	}
 }
