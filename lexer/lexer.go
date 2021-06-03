@@ -33,32 +33,49 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, l.ch)
+		tok = newToken(token.ASSIGN, string(l.ch))
 	case ';':
-		tok = newToken(token.SEMICOLON, l.ch)
-	case '(':
-		tok = newToken(token.LPAREN, l.ch)
-	case ')':
-		tok = newToken(token.RPAREN, l.ch)
-	case ',':
-		tok = newToken(token.COMMA, l.ch)
-	case '+':
-		tok = newToken(token.PLUS, l.ch)
-	case '{':
-		tok = newToken(token.LBRACE, l.ch)
-	case '}':
-		tok = newToken(token.RBRACE, l.ch)
-	case 0:
-		tok.Literal = ""
-		tok.Type = token.EOF
+		tok = newToken(token.SEMICOLON, string(l.ch))
+	// case '(':
+	// 	tok = newToken(token.LPAREN, l.ch)
+	// case ')':
+	// 	tok = newToken(token.RPAREN, l.ch)
+	// case ',':
+	// 	tok = newToken(token.COMMA, l.ch)
+	// case '+':
+	// 	tok = newToken(token.PLUS, l.ch)
+	// case '{':
+	// 	tok = newToken(token.LBRACE, l.ch)
+	// case '}':
+	// 	tok = newToken(token.RBRACE, l.ch)
+	// case 0:
+	// 	tok.Literal = ""
+	// 	tok.Type = token.EOF
+	default:
+		tok.Literal = l.readIdentifier()
+		tok.Type = token.LookupIdent(tok.Literal)
 	}
 
 	l.readChar()
 	return tok
 }
 
-func newToken(tok token.TokenType, ch byte) token.Token {
-	return token.Token{Type: tok, Literal: string(ch)}
+func (l *Lexer) readIdentifier() string {
+	var identifier []byte
+	for isLetter(l.ch) {
+		identifier = append(identifier, l.ch) // can use lexer struct instead
+		l.readChar()
+	}
+	return string(identifier)
+}
+
+func isLetter(ch byte) bool {
+	r := regexp.MustCompile(`[a-zA-Z_]{1,1}`) // can use byte comparison
+	return r.Match([]byte{ch})
+}
+
+func newToken(tt token.TokenType, tok string) token.Token {
+	return token.Token{Type: tt, Literal: tok}
 }
 
 func (l *Lexer) skipWhitespace() {
