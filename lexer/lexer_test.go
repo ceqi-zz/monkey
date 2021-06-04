@@ -27,6 +27,8 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "ten"},
+		{token.ASSIGN, "="},
+		{token.INT, "10"},
 		//...
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
@@ -51,7 +53,7 @@ func TestSkipWhitespace(t *testing.T) {
 
 	let the_game_begain`)
 
-	l.skipWhitespace()
+	l.eatWhitespace()
 
 	got := l.ch
 

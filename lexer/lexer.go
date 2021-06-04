@@ -31,11 +31,13 @@ func (l *Lexer) readChar() {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
+	l.eatWhitespace()
+
 	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, string(l.ch))
+		tok = newToken(token.ASSIGN, l.ch)
 	case ';':
-		tok = newToken(token.SEMICOLON, string(l.ch))
+		tok = newToken(token.SEMICOLON, l.ch)
 	// case '(':
 	// 	tok = newToken(token.LPAREN, l.ch)
 	// case ')':
@@ -52,12 +54,34 @@ func (l *Lexer) NextToken() token.Token {
 	// 	tok.Literal = ""
 	// 	tok.Type = token.EOF
 	default:
-		tok.Literal = l.readIdentifier()
-		tok.Type = token.LookupIdent(tok.Literal)
+		if isDigit(l.ch) {
+			tok.Literal = l.readDigit()
+			tok.Type = token.INT
+			return tok
+		} else if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
+
 	}
 
 	l.readChar()
 	return tok
+}
+
+func (l *Lexer) readDigit() string {
+	position := l.position
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+func isDigit(ch byte) bool {
+	return ch >= '0' && ch <= '9'
 }
 
 func (l *Lexer) readIdentifier() string {
@@ -74,11 +98,11 @@ func isLetter(ch byte) bool {
 	return r.Match([]byte{ch})
 }
 
-func newToken(tt token.TokenType, tok string) token.Token {
-	return token.Token{Type: tt, Literal: tok}
+func newToken(tt token.TokenType, tok byte) token.Token {
+	return token.Token{Type: tt, Literal: string(tok)}
 }
 
-func (l *Lexer) skipWhitespace() {
+func (l *Lexer) eatWhitespace() {
 	r := regexp.MustCompile(`\s`)
 	for r.Match([]byte{l.ch}) {
 		l.readChar()
