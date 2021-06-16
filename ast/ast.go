@@ -30,7 +30,7 @@ func (p *Program) TokneLiteral() string {
 
 type LetStatement struct {
 	Token token.Token
-	name  *Identifier
+	Name  *Identifier
 	Value Expression
 }
 
