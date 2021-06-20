@@ -36,6 +36,7 @@ const (
 	//Keywords
 	FUNCTION = "FUNCTION"
 	LET      = "LET"
+	RETURN   = "RETURN"
 )
 
 var keywords = map[string]TokenType{
